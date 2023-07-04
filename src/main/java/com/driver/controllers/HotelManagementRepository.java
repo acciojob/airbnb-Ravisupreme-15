@@ -97,34 +97,23 @@ public class HotelManagementRepository {
         //If there arent enough rooms available in the hotel that we are trying to book return -1
         //in other case return total amount paid
 
-
-       String bookingId = String.valueOf(UUID.randomUUID());
-
-       booking.setBookingId(bookingId);
-
-        int totalamountToBePaid =0;
-
-        if(!hotelHashMap.containsKey(booking.getHotelName())) return -1;
-
-        if(hotelHashMap.get(booking.getHotelName()).getAvailableRooms() < booking.getNoOfRooms()) return -1;
-
-        else {
-
-              int availalberooms =  hotelHashMap.get(booking.getHotelName()).getAvailableRooms();
-
-              hotelHashMap.get(booking.getHotelName()).setAvailableRooms(availalberooms-booking.getNoOfRooms());
-
-
-              totalamountToBePaid = hotelHashMap.get(booking.getHotelName()).getPricePerNight()*booking.getNoOfRooms();
-
-
-              bookingHashMap.put(bookingId,booking);
-              userbookings.put(bookingId,totalamountToBePaid);
-              return totalamountToBePaid;
-
+        String hotelName = booking.getHotelName();
+        if (!hotelHashMap.containsKey(hotelName))return -1;
+        if (hotelHashMap.get(hotelName).getAvailableRooms() >= booking.getNoOfRooms()) {
+            Hotel hotel = hotelHashMap.get(hotelName);
+            int totalRoomAvilable = hotel.getAvailableRooms();
+            totalRoomAvilable -= booking.getNoOfRooms();
+            hotel.setAvailableRooms(totalRoomAvilable);
+            hotelHashMap.put(hotelName, hotel);
+            String bookingId = UUID.randomUUID() + "";
+            System.out.println(bookingId + "bookingId");
+            int amountTobePaid = hotel.getPricePerNight() * booking.getNoOfRooms();
+            bookingHashMap.put(bookingId, booking);
+            userbookings.put(bookingId, amountTobePaid);
+            System.out.println(amountTobePaid + "Amount To Paid");
+            return amountTobePaid;
         }
-
-
+        return -1;
     }
 
     public int getBookings(Integer aadharCard) {
