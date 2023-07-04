@@ -6,10 +6,7 @@ import com.driver.model.Hotel;
 import com.driver.model.User;
 import io.swagger.models.auth.In;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class HotelManagementRepository {
 
@@ -31,7 +28,7 @@ public class HotelManagementRepository {
 
      // user bookings
 
-  //  HashMap<String,Integer> userbookings = new HashMap<>();
+      HashMap<String,Integer> userbookings = new HashMap<>();
 
 
 
@@ -69,29 +66,26 @@ public class HotelManagementRepository {
         //Incase there is a tie return the lexicographically smaller hotelName
         //Incase there is not even a single hotel with atleast 1 facility return "" (empty string)
 
-        int maxCount=Integer.MIN_VALUE;
+        int maxCount=0;
 
         String hotel ="";
 
-        for(String hotels: hotelHashMap.keySet()){
+        for(String hotels: hotelHashMap.keySet()) {
 
-              if(hotelHashMap.get(hotels).getFacilities().size()>maxCount){
+            if (hotelHashMap.get(hotels).getFacilities().size() > maxCount) {
 
-                   hotel = hotelHashMap.get(hotels).getHotelName();
-              }
-              else if(hotelHashMap.get(hotels).getFacilities().size()==maxCount){
-
-                     if(hotelHashMap.get(hotels).getHotelName().compareTo(hotel)< 0){
-
-                              hotel = hotelHashMap.get(hotels).getHotelName();
-                     }else continue;
-
-              }
+                hotel = hotelHashMap.get(hotels).getHotelName();
+            }
         }
+        if(maxCount==0) return "";
 
-          if(maxCount== Integer.MIN_VALUE) return "";
-
-          return hotel;
+        List<String> hotelNames = new ArrayList<>();
+        for (String key : hotelHashMap.keySet()) {
+            List<Facility> facilities = hotelHashMap.get(key).getFacilities();
+            if (facilities.size() == maxCount) hotelNames.add(key);
+        }
+        Collections.sort(hotelNames);
+        return hotelNames.get(0);
     }
 
     public int bookAroom(Booking booking) {
@@ -125,7 +119,7 @@ public class HotelManagementRepository {
 
 
               bookingHashMap.put(bookingId,booking);
-             // userbookings.put(bookingId,totalamountToBePaid);
+              userbookings.put(bookingId,totalamountToBePaid);
               return totalamountToBePaid;
 
         }
