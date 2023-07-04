@@ -39,13 +39,10 @@ public class HotelManagementRepository {
         //in all other cases return SUCCESS after successfully adding the hotel to the hotelDb.
 
 
-        if(hotelHashMap.containsKey(hotel.getHotelName()) ||  hotel.getHotelName()==null){
-
-             return "FAILURE";
-        }
-
-          hotelHashMap.put(hotel.getHotelName(),hotel);
-
+        if (hotel.getHotelName() == null)return "FAILURE";
+        if (hotelHashMap.containsKey(hotel.getHotelName()))return "FAILURE";
+        String hotelName = hotel.getHotelName();
+        hotelHashMap.put(hotelName, hotel);
         return "SUCCESS";
 
     }
@@ -55,9 +52,9 @@ public class HotelManagementRepository {
         //You need to add a User Object to the database
         //Assume that user will always be a valid user and return the aadharCardNo of the user
 
-         userHashMap.put(user.getaadharCardNo(), user);
-         return user.getaadharCardNo();
-
+        int adharNum = user.getaadharCardNo();
+        userHashMap.put(adharNum, user);
+        return adharNum;
     }
 
     public String getHotelswithmostFacilities() {
@@ -66,23 +63,17 @@ public class HotelManagementRepository {
         //Incase there is a tie return the lexicographically smaller hotelName
         //Incase there is not even a single hotel with atleast 1 facility return "" (empty string)
 
-        int maxCount=0;
-
-        String hotel ="";
-
-        for(String hotels: hotelHashMap.keySet()) {
-
-            if (hotelHashMap.get(hotels).getFacilities().size() > maxCount) {
-
-                hotel = hotelHashMap.get(hotels).getHotelName();
-            }
+        int maxFacility = 0;
+        for (String key : hotelHashMap.keySet()) {
+            List<Facility> facilities = hotelHashMap.get(key).getFacilities();
+            maxFacility = Math.max(maxFacility, facilities.size());
         }
-        if(maxCount==0) return "";
 
+        if (maxFacility == 0) return "";
         List<String> hotelNames = new ArrayList<>();
         for (String key : hotelHashMap.keySet()) {
             List<Facility> facilities = hotelHashMap.get(key).getFacilities();
-            if (facilities.size() == maxCount) hotelNames.add(key);
+            if (facilities.size() == maxFacility) hotelNames.add(key);
         }
         Collections.sort(hotelNames);
         return hotelNames.get(0);
@@ -119,17 +110,11 @@ public class HotelManagementRepository {
     public int getBookings(Integer aadharCard) {
 
 
-           List<String> stringList = new ArrayList<>();
-
-            for(String bookingId: bookingHashMap.keySet()){
-
-                  if(aadharCard.equals(bookingHashMap.get(bookingId).getBookingAadharCard())){
-
-                      stringList.add(bookingId);
-                  }
-            }
-
-            return  stringList.size();
+        int cnt = 0;
+        for (String key : bookingHashMap.keySet()) {
+            if (aadharCard.equals(bookingHashMap.get(key).getBookingAadharCard()))cnt++;
+        }
+        return cnt;
     }
 
     public Hotel updateFacilities(List<Facility> newFacilities, String hotelName) {
